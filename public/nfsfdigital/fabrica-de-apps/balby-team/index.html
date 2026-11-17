@@ -1486,6 +1486,28 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
   .capaPronta .capaAro,.capaPronta .capaPalco .capaSelo,.capaToqueTxt.on{animation:none;transform:none}
 }
 </style>
+<style>
+
+.balby-sheet { color:#f3e6cb; background:#100d09; }
+.balby-sheet-inner { width:min(100%,760px); margin:auto; padding:24px 18px 32px; }
+.balby-sheet h1 { margin:22px 0 10px; color:#f5cf82; font-size:clamp(1.6rem,5vw,2.45rem); line-height:1.1; }
+.balby-sheet h2 { color:#f5cf82; }
+.balby-sheet .atalho { width:100%; text-align:left; min-height:84px; }
+.balby-sheet .atalho .nm, .balby-sheet .atalho .sb { display:block; }
+.balby-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); align-items:start; gap:10px 16px; }
+.balby-sheet .preview-card, .balby-staff { margin:16px 0; }
+.balby-tabs { gap:8px; flex-wrap:wrap; }
+.balby-tabs [aria-pressed="true"] { background:#e3b15e; color:#211306; }
+.balby-staff summary { cursor:pointer; padding:10px 0; color:#f5cf82; }
+.balby-record { padding:10px 0; border-bottom:1px solid #5f482c; white-space:pre-wrap; overflow-wrap:anywhere; }
+.balby-record a { display:inline-block; margin-top:6px; color:#ffdc94; }
+.balby-record p { margin:5px 0; }
+.balby-mantra { text-align:right; font-family:"Segoe Script",cursive; color:#ddbb7d; margin-top:32px; }
+#balby-accept label, #balby-invite-form label { display:block; margin-bottom:10px; }
+#balby-idade, #balby-invite-code { display:block; padding:8px; color:#f5cf82; overflow-wrap:anywhere; }
+
+
+</style>
 </head>
 <body>
 
@@ -1579,6 +1601,7 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
 
   <div class="login-links">
     <button class="btn btn-vazio" type="button" id="demo">Entrar como aluno de teste</button>
+    <button class="login-more" type="button" data-balby-go="convite">Tenho um convite</button>
     <button class="login-more" type="button" id="novo">Conhecer o time</button>
     <details class="login-more">
       <summary>Outras contas de teste</summary>
@@ -1636,6 +1659,7 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
 <!-- ---------- atalhos ---------- -->
 <section>
   <div class="tit"><h2>Minha área</h2></div>
+<div class="preview-actions"><button type="button" class="preview-btn" data-balby-go="ficha">Ficha do aluno</button> <button type="button" class="preview-btn" data-balby-go="acompanhamento">Meu acompanhamento</button></div>
   <div class="grade">
     <button class="atalho" id="evolucao">
       <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 6-8"/><path d="M14 7h4v4"/></svg></span>
@@ -1836,12 +1860,19 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
   <button class="botao" data-control="checkin">Fazer o check-in de hoje</button>
   <form id="preview-checkin" class="preview-card" hidden>
     <h2>Check-in de hoje</h2>
-    <label>Peso (kg) <input name="peso" type="number" min="1" max="500" step="0.1" required inputmode="decimal"></label>
+    <label>Peso (kg, em dia de avaliação) <input name="peso" type="number" min="1" max="500" step="0.1" inputmode="decimal"></label>
     <label>Cintura (cm, opcional) <input name="cintura" type="number" min="1" max="400" step="0.1" inputmode="decimal"></label>
-    <label>Como foi o treino? <textarea name="obs" rows="3" maxlength="300"></textarea></label>
+    <div class="balby-fields"><label>Como foram as refeições?<textarea name="refeicoes" rows="3" maxlength="1500"></textarea></label><label>Água consumida (litros)<input name="agua" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Como foi o treino?<select name="presenca"><option value="">Selecione</option><option>Treinei</option><option>Treinei parcialmente</option><option>Faltei</option><option>Não havia treino previsto</option></select></label><label>Tipo, duração e desempenho do treino<input name="duracao" type="text" maxlength="250"></label><label>Motivo da falta ou limitação<select name="motivo"><option value="">Selecione</option><option>Dor</option><option>Indisposição</option><option>Outro motivo</option></select></label><label>Sono, fome, disposição, estresse e intestino<textarea name="sono" rows="3" maxlength="1500"></textarea></label><label>Sintomas ou mudanças de medicamento<textarea name="sintomas" rows="3" maxlength="1500"></textarea></label></div>
+<label>Recado para a equipe <textarea name="obs" rows="3" maxlength="600"></textarea></label>
     <div class="preview-actions"><button class="preview-btn" type="submit">Salvar check-in</button><button class="preview-btn" type="button">Fechar</button></div>
   </form>
 </section>
+<div id="balby-checkin-photos" hidden><form class="preview-card" data-balby-photo="checkin">
+<h2>Fotos do check-in</h2>
+<label>Identificação da foto <input name="descricao" maxlength="120" placeholder="Ex.: frente, lado, costas ou refeição"></label>
+<label>Foto (JPG, PNG ou WebP, até 10 MB) <input name="arquivo" type="file" accept=".jpg,.jpeg,.png,.webp" required></label>
+<button type="submit" class="preview-btn">Anexar foto de teste</button>
+<div data-balby-photo-list="checkin" aria-live="polite"></div></form></div>
 <section class="preview-card">
   <h2>Meus registros neste navegador</h2>
   <ul id="preview-history"></ul>
@@ -2382,7 +2413,7 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
 
 <!-- ---------- contador dos 40 dias ---------- -->
 <div class="dias40">
-  <span class="tag">Programa STB 40</span>
+  <span class="tag">Programa STB 40</span><div class="preview-actions"><button type="button" class="preview-btn" data-balby-go="acompanhamento">Meu protocolo</button> <button type="button" class="preview-btn" data-balby-go="treino">Treino de hoje</button> <button type="button" class="preview-btn" data-balby-go="checkin">Check-in de hoje</button></div>
   <div class="big"><b>22</b><span>de 40 dias</span></div>
   <div class="de">Faltam 18 dias · você está na metade do programa</div>
   <div class="trilha" id="trilha"></div>
@@ -2596,12 +2627,28 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     <button type="submit" class="preview-btn">Cadastrar</button>
   </form>
   <div id="cadastro-lista"></div>
+<form id="balby-invite-form">
+  <h3>Convite de aluno para teste</h3>
+  <div class="balby-fields"><label>Nome <input name="nome" required maxlength="100"></label><label>E-mail <input name="email" type="email" required maxlength="160"></label></div>
+  <button class="preview-btn" type="submit">Gerar código de convite</button>
+  <output id="balby-invite-code" aria-live="polite"></output>
+</form>
 </section>
 <section class="preview-card" aria-labelledby="painel-teste-titulo">
   <h2 id="painel-teste-titulo">Acompanhamento de teste</h2>
   <p>Escolha uma conta de demonstração. As alterações ficam neste navegador.</p>
   <label for="painel-aluno">Aluno</label>
   <select id="painel-aluno"></select>
+<details class="balby-staff"><summary>Ficha, exames e mensagens do aluno</summary>
+<div id="balby-staff-ficha"></div>
+<h3>Exames deste aluno</h3><div id="balby-staff-exams"></div><h3>Fotos de avaliação, rotina e check-in</h3><div id="balby-staff-photos"></div>
+<form id="balby-staff-request"><label>Solicitação sobre exames <textarea name="texto" maxlength="1200" rows="2" required></textarea></label><button class="preview-btn">Salvar solicitação</button></form>
+<h3>Mensagens</h3><div id="balby-staff-messages"></div>
+<form id="balby-staff-message"><label>Resposta da equipe <textarea name="texto" maxlength="1200" rows="2" required></textarea></label><button class="preview-btn">Enviar resposta</button></form>
+</details>
+<details class="balby-staff"><summary>Protocolo e agenda individual</summary>
+<form id="balby-staff-plan" class="balby-fields"><label>Início do ciclo STB 40<input name="inicio" type="date" maxlength="250"></label><label>Alimentação, horários e substituições<textarea name="alimentacao" rows="3" maxlength="1500"></textarea></label><label>Meta diária de água<input name="agua" type="text" maxlength="250"></label><label>Orientações, tarefas e observações<textarea name="orientacoes" rows="3" maxlength="1500"></textarea></label><label>Orientações publicadas sobre suplementos<textarea name="suplementos" rows="3" maxlength="1500"></textarea></label><label>Próxima avaliação<input name="avaliacao" type="date" maxlength="250"></label><label>Alterações e orientações anteriores<textarea name="alteracoes" rows="3" maxlength="1500"></textarea></label><label>Turma, modalidade, professor, dias e horários<textarea name="turma" rows="3" maxlength="1500"></textarea></label><label>Próxima sessão presencial (horário/local)<input name="presencial" type="text" maxlength="250"></label><label>Treino realizado, evolução e próximos ajustes<textarea name="presencialRegistro" rows="3" maxlength="1500"></textarea></label><label>Próxima aula on-line (horário com fuso)<input name="online" type="datetime-local" maxlength="250"></label><label>Fuso do horário cadastrado<select name="fuso"><option value="">Selecione</option><option>America/Manaus</option><option>America/Sao_Paulo</option><option>America/Belem</option><option>America/Rio_Branco</option><option>UTC</option></select></label><label>Link HTTPS da sala on-line<input name="sala" type="url" maxlength="250"></label><label>Treino, orientações e correções<textarea name="onlineRegistro" rows="3" maxlength="1500"></textarea></label>
+<button class="preview-btn" type="submit">Publicar acompanhamento local</button></form></details>
   <form id="painel-treino">
     <label>Orientação complementar ao treino de hoje
       <textarea name="orientacao" maxlength="600" required rows="3"></textarea>
@@ -2979,6 +3026,56 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     <div id="professor-historico"></div>
   </section>
 </section>
+<section tabindex="-1" class="tela balby-sheet" id="t-ficha" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="inicio">← Início</button><h1>Ficha e acompanhamento</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p><div class="balby-fields"><button type="button" class="atalho" data-balby-go="cadastro-aluno"><span><span class="nm">Meu cadastro</span><span class="sb">Dados e tipo de atendimento</span></span></button><button type="button" class="atalho" data-balby-go="anamnese"><span><span class="nm">Avaliação inicial</span><span class="sb">Medidas, anamnese de saúde, hábitos e bem-estar</span></span></button><button type="button" class="atalho" data-balby-go="rotina"><span><span class="nm">Minha rotina de 24h</span><span class="sb">Refeições, trabalho, treino e sono</span></span></button><button type="button" class="atalho" data-balby-go="exames"><span><span class="nm">Meus exames</span><span class="sb">Enviar, consultar e baixar arquivos de teste</span></span></button><button type="button" class="atalho" data-balby-go="stb40"><span><span class="nm">Meu STB 40</span><span class="sb">Ciclo de 40 dias, tarefas e check-in</span></span></button><button type="button" class="atalho" data-balby-go="acompanhamento"><span><span class="nm">Meu acompanhamento</span><span class="sb">Protocolo, treino, mensagens, turmas e aulas particulares</span></span></button></div><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
+<section tabindex="-1" class="tela balby-sheet" id="t-cadastro-aluno" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="ficha">← Ficha e acompanhamento</button><h1>Meu cadastro</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p><div class="preview-actions"><button type="button" class="preview-btn" data-balby-go="anamnese">Ir para avaliação inicial</button></div><form class="preview-card" data-balby-draft="dados"><h2>1 de 2 · Seus dados</h2><div class="balby-fields"><label>Nome completo<input name="nome" type="text" maxlength="250"></label><label>Data de nascimento<input name="nascimento" type="date" maxlength="250"></label><label>Sexo (opcional)<select name="sexo"><option value="">Selecione</option><option>Feminino</option><option>Masculino</option><option>Outro</option><option>Prefiro não informar</option></select></label><label>Telefone<input name="telefone" type="tel" maxlength="250"></label><label>WhatsApp<input name="whatsapp" type="tel" maxlength="250"></label><label>E-mail da conta<input name="email" type="email" maxlength="250"></label><label>Endereço<input name="endereco" type="text" maxlength="250"></label><label>Cidade<input name="cidade" type="text" maxlength="250"></label><label>UF<input name="uf" type="text" maxlength="250"></label><label>País<input name="pais" type="text" maxlength="250"></label><label>Nome do contato de emergência<input name="emergencia" type="text" maxlength="250"></label><label>Parentesco<input name="parentesco" type="text" maxlength="250"></label><label>Telefone de emergência<input name="telefoneEmergencia" type="tel" maxlength="250"></label><label>Profissão<input name="profissao" type="text" maxlength="250"></label><label>Horário de trabalho<input name="horario" type="text" maxlength="250"></label><label>Fuso horário<input name="fuso" type="text" maxlength="250"></label></div><div class="preview-actions"><button class="preview-btn" type="submit">Salvar</button><output id="balby-idade" aria-live="polite"></output></div></form><form class="preview-card" data-balby-draft="atendimento"><h2>2 de 2 · Seu atendimento</h2><div class="balby-fields"><label>Atendimento<select name="tipo"><option value="">Selecione</option><option>Turma no Centro de Lutas</option><option>Particular presencial</option><option>Particular on-line</option><option>Preciso de orientação</option></select></label><label>Participação no STB 40 Mundial<select name="stb"><option value="">Selecione</option><option>Tenho interesse</option><option>Já participo</option><option>Não no momento</option></select></label><label>Objetivo principal<input name="objetivo" type="text" maxlength="250"></label><label>Objetivo de treino<select name="treino"><option value="">Selecione</option><option>Preparação física</option><option>Lutas</option><option>Condicionamento</option><option>Outro</option></select></label><label>Objetivo físico<select name="fisico"><option value="">Selecione</option><option>Emagrecimento</option><option>Hipertrofia</option><option>Outro</option></select></label></div><div class="preview-actions"><button class="preview-btn" type="submit">Salvar</button><button type="button" class="preview-btn" data-balby-go="anamnese">Ir para avaliação inicial</button></div></form><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
+<section tabindex="-1" class="tela balby-sheet" id="t-anamnese" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="ficha">← Ficha e acompanhamento</button><h1>Avaliação inicial</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p><nav class="preview-actions balby-tabs" aria-label="Etapas da avaliação"><button type="button" class="preview-btn" data-balby-step="1" aria-pressed="true">1 · Medidas e treino</button><button type="button" class="preview-btn" data-balby-step="2" aria-pressed="false">2 · Anamnese de saúde</button><button type="button" class="preview-btn" data-balby-step="3" aria-pressed="false">3 · Hábitos e bem-estar</button></nav><div data-balby-stage="1"><form class="preview-card" data-balby-draft="medidas"><h2>1 de 3 · Medidas e treino</h2><div class="balby-fields"><label>Peso atual (kg)<input name="peso" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Altura (cm)<input name="altura" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Peso desejado (kg)<input name="meta" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Cintura (cm)<input name="cintura" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Quadril (cm)<input name="quadril" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Peito (cm)<input name="peito" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Braço (cm)<input name="braco" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Coxa (cm)<input name="coxa" type="number" inputmode="decimal" min="0" step="0.1"></label><label>Objetivo e tempo de prática<textarea name="experiencia" rows="3" maxlength="1500"></textarea></label><label>Modalidade atual e dias por semana<textarea name="treino" rows="3" maxlength="1500"></textarea></label><label>Tempo disponível, local e equipamentos<textarea name="condicoes" rows="3" maxlength="1500"></textarea></label></div><div class="preview-actions"><button class="preview-btn" type="submit">Salvar</button><button class="preview-btn" type="submit" value="2">Salvar e continuar</button></div></form><form class="preview-card" data-balby-photo="medidas">
+<h2>Fotos opcionais da avaliação</h2>
+<label>Identificação da foto <input name="descricao" maxlength="120" placeholder="Ex.: frente, lado, costas ou refeição"></label>
+<label>Foto (JPG, PNG ou WebP, até 10 MB) <input name="arquivo" type="file" accept=".jpg,.jpeg,.png,.webp" required></label>
+<button type="submit" class="preview-btn">Anexar foto de teste</button>
+<div data-balby-photo-list="medidas" aria-live="polite"></div></form></div><div data-balby-stage="2" hidden><form class="preview-card" data-balby-draft="saude"><h2>2 de 3 · Anamnese de saúde</h2><div class="balby-fields"><label>Condições diagnosticadas<textarea name="diagnosticos" rows="3" maxlength="1500"></textarea></label><label>Dores, lesões e limitações<textarea name="lesoes" rows="3" maxlength="1500"></textarea></label><label>Cirurgias anteriores e datas<textarea name="cirurgias" rows="3" maxlength="1500"></textarea></label><label>Alergias ou restrições<textarea name="alergias" rows="3" maxlength="1500"></textarea></label><label>Medicamentos e suplementos em uso ou alterações<textarea name="medicamentos" rows="3" maxlength="1500"></textarea></label><label>Histórico de emagrecimento, estratégias ou medicamentos<textarea name="historico" rows="3" maxlength="1500"></textarea></label></div><div class="preview-actions"><button class="preview-btn" type="submit">Salvar</button><button class="preview-btn" type="submit" value="3">Salvar e continuar</button></div></form></div><div data-balby-stage="3" hidden><form class="preview-card" data-balby-draft="habitos"><h2>3 de 3 · Hábitos e bem-estar</h2><div class="balby-fields"><label>Horas por noite e qualidade do sono<textarea name="sono" rows="3" maxlength="1500"></textarea></label><label>Consumo diário de água<textarea name="agua" rows="3" maxlength="1500"></textarea></label><label>Alimentação e dificuldades<textarea name="alimentacao" rows="3" maxlength="1500"></textarea></label><label>Funcionamento intestinal<textarea name="intestino" rows="3" maxlength="1500"></textarea></label><label>Álcool, tabagismo e estresse<textarea name="habitos" rows="3" maxlength="1500"></textarea></label><label>Outras informações para a equipe<textarea name="outros" rows="3" maxlength="1500"></textarea></label></div><div class="preview-actions"><button class="preview-btn" type="submit">Salvar</button><button type="button" class="preview-btn" data-balby-go="rotina">Minha rotina de 24h</button></div></form></div><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
+<section tabindex="-1" class="tela balby-sheet" id="t-rotina" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="ficha">← Ficha e acompanhamento</button><h1>Minha rotina de 24h</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p><form class="preview-card" data-balby-draft="rotina"><h2>Como é seu dia</h2><div class="balby-fields"><label>Horário ao acordar e primeiras atividades<textarea name="acordar" rows="3" maxlength="1500"></textarea></label><label>Café, lanches, almoço, jantar e ceia<textarea name="refeicoes" rows="3" maxlength="1500"></textarea></label><label>Horários e o que comeu em cada refeição<textarea name="detalhes" rows="3" maxlength="1500"></textarea></label><label>Trabalho, deslocamento e tempo sentado<textarea name="trabalho" rows="3" maxlength="1500"></textarea></label><label>Horário, tipo e duração do treino<textarea name="treino" rows="3" maxlength="1500"></textarea></label><label>Água consumida<textarea name="agua" rows="3" maxlength="1500"></textarea></label><label>Horários de sono<textarea name="sono" rows="3" maxlength="1500"></textarea></label><label>Bem-estar, dificuldades e rotina de fim de semana<textarea name="bemEstar" rows="3" maxlength="1500"></textarea></label></div><div class="preview-actions"><button class="preview-btn" type="submit">Salvar</button></div></form><form class="preview-card" data-balby-photo="rotina">
+<h2>Fotos das refeições</h2>
+<label>Identificação da foto <input name="descricao" maxlength="120" placeholder="Ex.: frente, lado, costas ou refeição"></label>
+<label>Foto (JPG, PNG ou WebP, até 10 MB) <input name="arquivo" type="file" accept=".jpg,.jpeg,.png,.webp" required></label>
+<button type="submit" class="preview-btn">Anexar foto de teste</button>
+<div data-balby-photo-list="rotina" aria-live="polite"></div></form><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
+<section tabindex="-1" class="tela balby-sheet" id="t-convite" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="login">← Voltar ao login</button><h1>Cadastro por convite</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p><form id="balby-accept" class="preview-card"><label>E-mail do convite<input name="email" type="email" required></label><label>Código do convite<input name="codigo" autocomplete="off" required maxlength="32"></label><label>Crie uma senha de teste<input name="senha" type="password" autocomplete="new-password" minlength="6" maxlength="100" required></label><button class="preview-btn" type="submit">Ativar cadastro</button></form><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
+<section tabindex="-1" class="tela balby-sheet" id="t-exames" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="ficha">← Ficha e acompanhamento</button><h1>Meus exames</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p>
+<form class="preview-card" id="balby-exam">
+  <h2>Enviar exame para a equipe de teste</h2>
+  <label>Situação <select name="situacao"><option>Tenho exames recentes</option><option>Não tenho exames recentes</option></select></label>
+  <div id="balby-exam-fields">
+    <label>Data do exame <input type="date" name="data"></label>
+    <label>Anexar PDF ou foto (até 10 MB por arquivo) <input type="file" name="arquivo" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"></label>
+    <label>Ou link privado de compartilhamento <input type="url" name="link" maxlength="1500" placeholder="https://"></label>
+  </div>
+  <label>Mensagem para a equipe <textarea rows="3" name="observacao" maxlength="1200"></textarea></label>
+  <button class="preview-btn" type="submit">Enviar registro</button>
+</form>
+<div class="preview-card"><h2>Solicitações da equipe</h2><div id="balby-exam-request"></div></div>
+<div class="preview-card"><h2>Histórico de exames</h2><div id="balby-exam-history" aria-live="polite"></div></div><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
+<section tabindex="-1" class="tela balby-sheet" id="t-acompanhamento" hidden><div class="balby-sheet-inner"><button type="button" class="preview-btn" data-balby-go="ficha">← Ficha e acompanhamento</button><h1>Meu acompanhamento</h1><p class="preview-note">Modo de teste neste navegador. Use dados e arquivos fictícios.</p>
+<nav class="preview-actions balby-tabs" aria-label="Acompanhamento">
+<button type="button" class="preview-btn" data-balby-tab="protocolo" aria-pressed="true">Meu protocolo</button>
+<button type="button" class="preview-btn" data-balby-tab="treino" aria-pressed="false">Treino de hoje</button>
+<button type="button" class="preview-btn" data-balby-tab="mensagens" aria-pressed="false">Mensagens</button>
+<button type="button" class="preview-btn" data-balby-tab="turma" aria-pressed="false">Minha turma</button>
+<button type="button" class="preview-btn" data-balby-tab="presencial" aria-pressed="false">Particular presencial</button>
+<button type="button" class="preview-btn" data-balby-tab="online" aria-pressed="false">Particular on-line</button>
+</nav>
+<div class="preview-card" data-balby-panel="protocolo"><h2>Meu protocolo STB 40</h2><div id="balby-protocolo"></div>
+<button type="button" class="preview-btn" data-balby-go="stb40">Abrir meu STB 40</button>
+</div>
+<div class="preview-card" data-balby-panel="treino" hidden><h2>Treino de hoje</h2><p id="balby-treino-orientacao"></p><p id="balby-treino-status"></p><button type="button" class="preview-btn" data-balby-go="treino">Ver exercícios e séries</button> <button type="button" class="preview-btn" data-balby-go="checkin">Registrar no check-in</button></div>
+<div class="preview-card" data-balby-panel="mensagens" hidden><h2>Mensagens com a equipe de teste</h2><div id="balby-mensagens"></div>
+<form id="balby-message"><label>Assunto <select name="assunto"><option>Treino</option><option>Protocolo</option><option>Exames</option><option>Pagamentos</option></select></label>
+<label>Mensagem <textarea name="mensagem" required maxlength="1200" rows="3"></textarea></label>
+<label>Anexo opcional (até 10 MB) <input name="arquivo" type="file" accept="image/*,video/*,audio/*,.pdf"></label>
+<button class="preview-btn" type="submit">Enviar mensagem</button></form></div>
+<div class="preview-card" data-balby-panel="turma" hidden><h2>Minha turma</h2><p id="balby-turma"></p><p id="balby-presenca"></p><button type="button" class="preview-btn" data-balby-go="agenda">Ver agenda</button> <button type="button" class="preview-btn" data-balby-go="checkin">Registrar aviso ao professor</button></div>
+<div class="preview-card" data-balby-panel="presencial" hidden><h2>Minha sessão particular presencial</h2><div id="balby-presencial"></div><button type="button" class="preview-btn" data-balby-go="agenda">Ver agenda</button> <button type="button" class="preview-btn" data-balby-go="evolucao">Consultar evolução</button></div>
+<div class="preview-card" data-balby-panel="online" hidden><h2>Minha aula particular on-line</h2><div id="balby-online"></div><button type="button" class="preview-btn" data-balby-go="agenda">Ver agenda</button> <button type="button" class="preview-btn" data-balby-go="correcao">Enviar vídeo ou foto para correção</button> <button type="button" class="preview-btn" data-balby-go="plano">Dúvidas e pagamentos</button></div><p class="balby-mantra">Jesus, meu coração é teu, minha vida é sua!</p></div></section>
 <div id="preview-notice" role="status" aria-live="polite"></div>
 <script>
 (() => {
@@ -3166,7 +3263,8 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     if (user && !active(user)) user = null;
     if (accounts[user]?.role === 'professor' && !['capa', 'login', 'time'].includes(name)) name = 'professor';
     if (name === 'professor' && accounts[user]?.role !== 'professor') name = user ? 'inicio' : 'login';
-    if (!user && !['capa', 'login', 'time'].includes(name)) name = 'login';
+    if (!user && !['capa', 'login', 'time', 'convite'].includes(name)) name = 'login';
+    if (name === 'convite' && user) name = 'inicio';
     if (name === 'admin' && accounts[user]?.role !== 'admin') name = 'inicio';
     const target = screen(name);
     if (!target) return;
@@ -3211,6 +3309,7 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     form.hidden = true;
     target.scrollTop = 0;
     target.focus({preventScroll:true});
+    renderBalbyPage(name);
   }
   function bind(node, action) {
     if (!node) return;
@@ -3331,11 +3430,10 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
   function openCheckin() {
     go('evolucao');
     const record = today().checkin || {};
-    form.elements.peso.value = record.peso ?? '';
-    form.elements.cintura.value = record.cintura ?? '';
-    form.elements.obs.value = record.obs || '';
+    setBalbyFields(form, record);
+    renderBalbyPhotos('checkin');
     form.hidden = false;
-    form.elements.peso.focus();
+    form.elements.refeicoes.focus();
   }
   function history() {
     const list = document.querySelector('#preview-history');
@@ -3345,7 +3443,7 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     for (const [day, record] of entries) {
       const li = document.createElement('li');
       const {peso, cintura, obs} = record.checkin || {};
-      li.textContent = [day.split('-').reverse().join('/'), record.completed && 'Treino concluído', peso && peso + ' kg', cintura && cintura + ' cm de cintura', obs, record.reply && 'Equipe: ' + record.reply].filter(Boolean).join(' · ');
+      li.textContent = [day.split('-').reverse().join('/'), record.completed && 'Treino concluído', record.checkin?.presenca, record.checkin?.motivo, peso && peso + ' kg', cintura && cintura + ' cm de cintura', obs, record.reply && 'Equipe: ' + record.reply].filter(Boolean).join(' · ');
       if (record.completed || record.checkin) list.append(li);
       if (record.assessment) {
         const evaluation = document.createElement('li');
@@ -3360,8 +3458,10 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
   form.addEventListener('submit', event => {
     event.preventDefault();
     if (!user) return;
-    const values = form.elements;
-    const persisted = save({checkin:{peso:Number(values.peso.value), cintura:values.cintura.value ? Number(values.cintura.value) : null, obs:values.obs.value.trim()}});
+    const checkin = balbyValues(form);
+    if (!Object.values(checkin).some(Boolean)) return report('Preencha pelo menos um campo do check-in.');
+    for (const key of ['peso','cintura','agua']) checkin[key] = checkin[key] ? Number(checkin[key]) : null;
+    const persisted = save({checkin});
     history();
     form.hidden = true;
     report(persisted ? 'Check-in salvo neste navegador.' : 'Check-in registrado para esta sessão.');
@@ -3462,11 +3562,13 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     replyForm.elements.resposta.value = entry?.[1].reply || '';
     replyForm.elements.resposta.disabled = !entry;
     replyForm.querySelector('button').disabled = !entry;
-    at('admin', 'painel-checkin').textContent = entry
-      ? entry[0].split('-').reverse().join('/') + ' · ' + entry[1].checkin.peso + ' kg'
-        + (entry[1].checkin.cintura ? ' · ' + entry[1].checkin.cintura + ' cm de cintura' : '')
-        + (entry[1].checkin.obs ? ' · ' + entry[1].checkin.obs : '')
-      : 'Este aluno ainda não registrou um check-in.';
+    const c = entry?.[1].checkin;
+    at('admin', 'painel-checkin').textContent = c ? [
+      entry[0].split('-').reverse().join('/'), c.presenca, c.duracao, c.motivo && 'Motivo: ' + c.motivo,
+      c.peso && c.peso + ' kg', c.cintura && c.cintura + ' cm de cintura', c.refeicoes,
+      c.agua != null && 'Água: ' + c.agua + ' L', c.sono, c.sintomas, c.obs
+    ].filter(Boolean).join(' · ') : 'Este aluno ainda não registrou um check-in.';
+    renderBalbyStaff();
   }
   student.addEventListener('change', renderPanel);
   instructionForm.addEventListener('submit', event => {
@@ -3834,6 +3936,435 @@ button.capaPalco{padding:0;border:0;border-radius:50%;background:none}
     finSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
   document.getElementById('financeiro-ad1').addEventListener('focusin',()=>{if(finIsAdmin())finRender();},{once:true});
+
+  const balbyEl = id => document.getElementById('balby-' + id);
+  const balbyAccountKey = (area, email) => '.ficha.' + area + '.' + (accounts[email]?.recordId || email);
+  const balbyValues = form => Object.fromEntries([...new FormData(form)].filter(([, value]) => typeof value === 'string').map(([key, value]) => [key, value.trim()]));
+  function setBalbyFields(form, values) {
+    form.reset();
+    for (const field of form.elements) {
+      if (field.name && Object.hasOwn(values, field.name)) field.value = values[field.name] ?? '';
+    }
+  }
+  function balbyDraft(area, email = user) {
+    return read('localStorage', balbyAccountKey(area, email)) || {};
+  }
+  function saveBalbyDraft(area, values, email = user) {
+    return write('localStorage', balbyAccountKey(area, email), values);
+  }
+  function isBalbyStudent(email = user) {
+    return Boolean(email && active(email) && accounts[email].role === 'aluno');
+  }
+  function setBalbyStep(step) {
+    document.querySelectorAll('[data-balby-step]').forEach(button => button.setAttribute('aria-pressed', button.dataset.balbyStep === step));
+    document.querySelectorAll('[data-balby-stage]').forEach(panel => panel.hidden = panel.dataset.balbyStage !== step);
+  }
+  function setBalbyTab(tab) {
+    document.querySelectorAll('[data-balby-tab]').forEach(button => button.setAttribute('aria-pressed', button.dataset.balbyTab === tab));
+    document.querySelectorAll('[data-balby-panel]').forEach(panel => panel.hidden = panel.dataset.balbyPanel !== tab);
+  }
+  document.querySelectorAll('[data-balby-step]').forEach(button => button.addEventListener('click', () => setBalbyStep(button.dataset.balbyStep)));
+  document.querySelectorAll('[data-balby-tab]').forEach(button => button.addEventListener('click', () => setBalbyTab(button.dataset.balbyTab)));
+  document.querySelectorAll('[data-balby-go]').forEach(button => button.addEventListener('click', () => {
+    const dest = button.dataset.balbyGo;
+    if (dest === 'checkin') return openCheckin();
+    if (dest === 'correcao') {
+      go('acompanhamento');
+      setBalbyTab('mensagens');
+      balbyEl('message').elements.arquivo.focus();
+      return;
+    }
+    go(dest);
+  }));
+
+  const drafts = [...document.querySelectorAll('form[data-balby-draft]')];
+  const dataForm = drafts.find(form => form.dataset.balbyDraft === 'dados');
+  dataForm.elements.email.readOnly = true;
+  function renderBalbyAge() {
+    const date = dataForm.elements.nascimento.value;
+    const now = dateKey();
+    balbyEl('idade').textContent = date && date <= now
+      ? 'Idade: ' + (Number(now.slice(0,4)) - Number(date.slice(0,4)) - (now.slice(5) < date.slice(5) ? 1 : 0)) + ' anos'
+      : '';
+  }
+  dataForm.elements.nascimento.addEventListener('input', renderBalbyAge);
+  for (const draft of drafts) {
+    draft.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!isBalbyStudent()) return;
+      const area = draft.dataset.balbyDraft;
+      const values = balbyValues(draft);
+      if (area === 'dados') {
+        if (!values.nome) return report('Informe o nome completo.');
+        if (values.nascimento > dateKey()) return report('A data de nascimento não pode ser futura.');
+        values.email = user;
+      }
+      if (!saveBalbyDraft(area, values)) return report('O navegador manteve o rascunho apenas nesta sessão.');
+      if (event.submitter?.value) setBalbyStep(event.submitter.value);
+      report('Ficha salva neste navegador.');
+    });
+  }
+
+  function getBalbyInvites() {
+    return read('localStorage', '.ficha.convites') || {};
+  }
+  balbyEl('invite-form').addEventListener('submit', event => {
+    event.preventDefault();
+    if (!canManage()) return;
+    const form = event.currentTarget;
+    const values = balbyValues(form);
+    const email = values.email.toLowerCase();
+    if (!values.nome || Object.hasOwn(accounts, email)) return report('Informe um nome e um e-mail sem conta cadastrada.');
+    const invites = getBalbyInvites();
+    const code = Array.from(crypto.getRandomValues(new Uint8Array(8)), byte => byte.toString(16).padStart(2,'0')).join('').toUpperCase();
+    invites[email] = {name:values.nome, code, expires:Date.now() + 7 * 86400000};
+    if (!write('localStorage', '.ficha.convites', invites)) {
+      delete invites[email];
+      return report('Não foi possível salvar o convite.');
+    }
+    balbyEl('invite-code').textContent = email + ' · ' + code + ' · válido por 7 dias neste navegador';
+    form.reset();
+  });
+  balbyEl('accept').addEventListener('submit', event => {
+    event.preventDefault();
+    if (user) return;
+    const form = event.currentTarget;
+    const values = balbyValues(form);
+    const email = values.email.toLowerCase();
+    const invites = getBalbyInvites();
+    const invite = Object.hasOwn(invites, email) ? invites[email] : null;
+    accounts = read('localStorage', '.accounts') || accounts;
+    if (!invite || invite.code !== values.codigo.toUpperCase() || invite.expires <= Date.now() || Object.hasOwn(accounts,email)) {
+      return report('Confira o e-mail e o código. O convite pode ter vencido ou já ter sido usado.');
+    }
+    const recordId = 'id:' + Date.now() + ':' + invite.code;
+    const next = {...accounts, [email]:{name:invite.name, role:'aluno', password:form.elements.senha.value, recordId, enabled:true}};
+    const previous = accounts;
+    if (!write('localStorage', '.accounts', next)) {
+      write('localStorage', '.accounts', previous);
+      return report('Não foi possível ativar o cadastro neste navegador.');
+    }
+    accounts = next;
+    delete invites[email];
+    write('localStorage', '.ficha.convites', invites);
+    form.reset();
+    enter(email, false);
+    go('cadastro-aluno');
+  });
+
+  // Attachments and their metadata share one IndexedDB transaction.
+  let balbyDatabase;
+  function openBalbyDatabase() {
+    if (!balbyDatabase) {
+      balbyDatabase = new Promise((resolve,reject) => {
+        const request = indexedDB.open('balby.preview.ficha',1);
+        request.onupgradeneeded = () => {
+          const store = request.result.createObjectStore('registros',{keyPath:'id',autoIncrement:true});
+          store.createIndex('alunoArea',['aluno','area']);
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      }).catch(error => { balbyDatabase = undefined; throw error; });
+    }
+    return balbyDatabase;
+  }
+  async function balbyRecords(area, email, record) {
+    const db = await openBalbyDatabase();
+    const aluno = accounts[email]?.recordId || email;
+    return new Promise((resolve,reject) => {
+      const transaction = db.transaction('registros',record ? 'readwrite' : 'readonly');
+      const store = transaction.objectStore('registros');
+      const request = record
+        ? store.add({...record,aluno,area,criado:new Date().toISOString()})
+        : store.index('alunoArea').getAll(IDBKeyRange.only([aluno,area]));
+      transaction.oncomplete = () => resolve(request.result);
+      transaction.onerror = () => reject(transaction.error || request.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+  }
+  function safeBalbyLink(value) {
+    if (!value) return '';
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' ? url.href : '';
+    } catch { return ''; }
+  }
+  function balbyParagraph(box, text) {
+    const p = document.createElement('p');
+    p.textContent = text;
+    box.append(p);
+    return p;
+  }
+  function balbyLink(box, url, label) {
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.textContent = label;
+    box.append(anchor);
+  }
+  function balbyDownload(box, file) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'preview-btn';
+    button.textContent = 'Baixar ' + file.name;
+    button.addEventListener('click', () => {
+      const url = URL.createObjectURL(file);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = file.name;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(url),30000);
+    });
+    box.append(button);
+  }
+  const balbyDate = new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeZone:'America/Manaus'});
+  const examForm = balbyEl('exam');
+  function toggleBalbyExamFields() {
+    const open = examForm.elements.situacao.selectedIndex === 0;
+    balbyEl('exam-fields').hidden = !open;
+    for (const key of ['data','arquivo','link']) examForm.elements[key].disabled = !open;
+  }
+  examForm.elements.situacao.addEventListener('change', toggleBalbyExamFields);
+  function balbyAttachment(form) {
+    const file = form.elements.arquivo.disabled ? null : form.elements.arquivo.files[0];
+    if (file && (file.size > 10 * 1024 * 1024 || file.size === 0)) throw new Error('Escolha um arquivo de até 10 MB que tenha conteúdo.');
+    return file || null;
+  }
+  function balbyExamEntry(record, box) {
+    balbyParagraph(box, record.situacao + (record.data ? ' · ' + record.data.split('-').reverse().join('/') : '') + ' · Registro de ' + balbyDate.format(new Date(record.criado)));
+    if (record.observacao) balbyParagraph(box, record.observacao);
+    if (record.file) balbyDownload(box, record.file);
+    if (safeBalbyLink(record.link)) balbyLink(box, record.link, 'Abrir link do exame');
+  }
+  function balbyMessageEntry(record, box) {
+    balbyParagraph(box, record.autor + ' · ' + record.assunto + ' · ' + balbyDate.format(new Date(record.criado)));
+    balbyParagraph(box, record.mensagem);
+    if (record.file) balbyDownload(box, record.file);
+  }
+  const listRevisions = new WeakMap();
+  async function renderBalbyRecords(area, email, box, render) {
+    const revision = {};
+    listRevisions.set(box,revision);
+    box.textContent = 'Carregando…';
+    if (!email) { box.textContent = 'Selecione um aluno.'; return; }
+    const viewer = user;
+    try {
+      const records = await balbyRecords(area,email);
+      if (user !== viewer || listRevisions.get(box) !== revision) return;
+      box.replaceChildren();
+      if (!records.length) box.textContent = area === 'exames' ? 'Nenhum exame registrado.' : area === 'mensagens' ? 'Nenhuma mensagem registrada.' : 'Nenhuma foto registrada.';
+      const ordered = area === 'exames' ? [...records].reverse() : records;
+      for (const record of ordered) {
+        const entry = document.createElement('div');
+        entry.className = 'balby-record';
+        render(record,entry);
+        box.append(entry);
+      }
+    } catch {
+      if (user === viewer && listRevisions.get(box) === revision) box.textContent = 'Os registros locais estão indisponíveis neste navegador.';
+    }
+  }
+  async function submitBalbyRecord(form, area, email, record, then) {
+    const button = form.querySelector('button[type="submit"],button:not([type])');
+    if (button.disabled) return;
+    const viewer = user;
+    button.disabled = true;
+    try {
+      await balbyRecords(area,email,record);
+      if (user === viewer) {
+        form.reset();
+        then();
+        report(area === 'exames' ? 'Registro de exame enviado para o painel de teste neste navegador.' : area === 'mensagens' ? 'Mensagem enviada neste navegador.' : 'Foto anexada neste navegador.');
+      }
+    } catch {
+      if (user === viewer) report('Não foi possível salvar. Verifique o espaço e as permissões de armazenamento do navegador.');
+    } finally { button.disabled = false; }
+  }
+  examForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!isBalbyStudent()) return;
+    const values = balbyValues(examForm);
+    let file;
+    try { file = balbyAttachment(examForm); }
+    catch (error) { return report(error.message); }
+    const link = safeBalbyLink(values.link);
+    if (values.link && !link) return report('Use um link que comece com https://.');
+    if (file && !/\.(pdf|jpe?g|png|webp)$/i.test(file.name)) return report('Escolha um arquivo PDF, JPG, PNG ou WebP.');
+    if (!examForm.elements.arquivo.disabled && !file && !link) return report('Anexe um exame ou informe o link privado.');
+    if (values.data && values.data > dateKey()) return report('A data do exame não pode ser futura.');
+    submitBalbyRecord(examForm,'exames',user,{...values,link,file},() => {
+      toggleBalbyExamFields();
+      renderBalbyPage('exames');
+    });
+  });
+  const messageForm = balbyEl('message');
+  messageForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!isBalbyStudent()) return;
+    const values = balbyValues(messageForm);
+    if (!values.mensagem) return report('Escreva a mensagem para a equipe.');
+    let file;
+    try { file = balbyAttachment(messageForm); }
+    catch (error) { return report(error.message); }
+    submitBalbyRecord(messageForm,'mensagens',user,{...values,file,autor:accounts[user].name},() => renderBalbyPage('acompanhamento'));
+  });
+
+  function balbyPhotoEntry(record, box) {
+    balbyParagraph(box, (record.descricao || 'Foto') + ' · ' + balbyDate.format(new Date(record.criado)));
+    balbyDownload(box, record.file);
+  }
+  function renderBalbyPhotos(area) {
+    const box = document.querySelector('[data-balby-photo-list="' + area + '"]');
+    renderBalbyRecords('fotos-' + area,user,box,balbyPhotoEntry);
+  }
+  document.querySelectorAll('[data-balby-photo]').forEach(form => {
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!isBalbyStudent()) return;
+      let file;
+      try { file = balbyAttachment(form); }
+      catch (error) { return report(error.message); }
+      if (!file || !/\.(jpe?g|png|webp)$/i.test(file.name)) return report('Escolha uma foto JPG, PNG ou WebP.');
+      const area = form.dataset.balbyPhoto;
+      submitBalbyRecord(form,'fotos-' + area,user,{...balbyValues(form),file},() => renderBalbyPhotos(area));
+    });
+  });
+  const staffPlan = balbyEl('staff-plan');
+  const staffRequest = balbyEl('staff-request');
+  const staffMessage = balbyEl('staff-message');
+  staffRequest.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!canManage() || !isBalbyStudent(student.value)) return;
+    const values = balbyValues(staffRequest);
+    if (!values.texto) return report('Digite o exame ou o registro solicitado.');
+    report(saveBalbyDraft('solicitacao',values,student.value) ? 'Solicitação salva para o aluno neste navegador.' : 'Solicitação disponível apenas nesta sessão.');
+  });
+  staffMessage.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!canManage() || !isBalbyStudent(student.value)) return;
+    const {texto} = balbyValues(staffMessage);
+    if (!texto) return report('Escreva a resposta.');
+    submitBalbyRecord(staffMessage,'mensagens',student.value,{mensagem:texto,assunto:'Resposta da equipe',autor:accounts[user].name},renderBalbyStaff);
+  });
+  staffPlan.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!canManage() || !isBalbyStudent(student.value)) return;
+    const values = balbyValues(staffPlan);
+    if (values.sala && !safeBalbyLink(values.sala)) return report('Informe um endereço HTTPS para a aula.');
+    if (values.online && !values.fuso) return report('Selecione o fuso do horário da aula.');
+    report(saveBalbyDraft('protocolo',values,student.value) ? 'Acompanhamento publicado para o aluno neste navegador.' : 'Alterações disponíveis apenas nesta sessão.');
+  });
+  function renderBalbyStaff() {
+    if (!canManage()) return;
+    const email = student.value;
+    const box = balbyEl('staff-ficha');
+    box.replaceChildren();
+    setBalbyFields(staffPlan, email ? balbyDraft('protocolo',email) : {});
+    setBalbyFields(staffRequest,email ? balbyDraft('solicitacao',email) : {});
+    staffMessage.reset();
+    for (const form of [staffPlan,staffRequest,staffMessage]) {
+      for (const control of form.elements) control.disabled = !isBalbyStudent(email);
+    }
+    for (const form of drafts) {
+      const saved = email ? balbyDraft(form.dataset.balbyDraft,email) : {};
+      const entries = [...form.querySelectorAll('label')].flatMap(label => {
+        const input = label.querySelector('[name]');
+        return input && saved[input.name] ? [label.firstChild.textContent + ' · ' + saved[input.name]] : [];
+      });
+      if (entries.length) balbyParagraph(box,form.querySelector('h2').textContent + '\n' + entries.join('\n')).className = 'balby-record';
+    }
+    if (!box.childElementCount) box.textContent = 'Ficha ainda sem registros do aluno.';
+    renderBalbyRecords('exames',email,balbyEl('staff-exams'),balbyExamEntry);
+    const photos = balbyEl('staff-photos');
+    photos.replaceChildren();
+    for (const [area,label] of [['medidas','Avaliação'],['rotina','Rotina'],['checkin','Check-in']]) {
+      balbyParagraph(photos,label);
+      const group = document.createElement('div');
+      photos.append(group);
+      renderBalbyRecords('fotos-' + area,email,group,balbyPhotoEntry);
+    }
+    renderBalbyRecords('mensagens',email,balbyEl('staff-messages'),balbyMessageEntry);
+  }
+  function balbyCycle(plan) {
+    if (!plan.inicio || plan.inicio > dateKey()) return 0;
+    return Math.min(40,1 + Math.floor((Date.parse(dateKey()) - Date.parse(plan.inicio)) / 86400000));
+  }
+  function formatBalbyAppointment(value, zone) {
+    if (!value || !zone) return '';
+    const [date,time] = value.split('T');
+    const [year,month,day] = date.split('-').map(Number);
+    const [hour,minute] = time.split(':').map(Number);
+    const hourInUtc = Date.UTC(year,month-1,day,hour,minute);
+    const offsetLabel = new Intl.DateTimeFormat('en-US',{timeZone:zone,timeZoneName:'longOffset'}).formatToParts(hourInUtc).find(part => part.type === 'timeZoneName').value;
+    const offset = offsetLabel.match(/GMT([+-])(\d{2}):(\d{2})/);
+    const minutes = offset ? (Number(offset[2]) * 60 + Number(offset[3])) * (offset[1] === '-' ? -1 : 1) : 0;
+    return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(hourInUtc - minutes * 60000) + ' · seu fuso';
+  }
+  function renderBalbyPage(name) {
+    if (!isBalbyStudent()) return;
+    if (['cadastro-aluno','anamnese','rotina'].includes(name)) {
+      for (const form of screen(name).querySelectorAll('[data-balby-draft]')) {
+        const area = form.dataset.balbyDraft;
+        const account = accounts[user];
+        const values = area === 'dados' ? {nome:account.name,email:user,nascimento:account.nascimento,endereco:account.endereco,telefone:account.telefone} : {};
+        if (area === 'medidas') Object.assign(values,{altura:account.altura,peso:account.peso});
+        setBalbyFields(form,{...values,...balbyDraft(area)});
+      }
+      dataForm.elements.nascimento.max = dateKey();
+      renderBalbyAge();
+    }
+    if (name === 'anamnese') renderBalbyPhotos('medidas');
+    if (name === 'rotina') renderBalbyPhotos('rotina');
+    if (name === 'stb40') {
+      const plan = balbyDraft('protocolo');
+      const day = balbyCycle(plan);
+      const block = screen(name).querySelector('.dias40');
+      block.querySelector('.big b').textContent = day || '—';
+      block.querySelector('.de').textContent = day
+        ? (day === 40 ? 'Dia 40 · reta final do ciclo' : 'Faltam ' + (40-day) + ' dias')
+        : (plan.inicio ? 'Início previsto em ' + plan.inicio.split('-').reverse().join('/') : 'Aguardando início publicado pela equipe');
+      [...block.querySelector('#trilha').children].forEach((segment,index) => {
+        segment.classList.toggle('on',index < Math.ceil(day / 4));
+      });
+    }
+    if (name === 'exames') {
+      const email = user;
+      examForm.reset();
+      examForm.elements.data.max = dateKey();
+      toggleBalbyExamFields();
+      balbyEl('exam-request').textContent = balbyDraft('solicitacao').texto || 'Nenhuma solicitação registrada.';
+      renderBalbyRecords('exames',email,balbyEl('exam-history'),balbyExamEntry);
+    }
+    if (name !== 'acompanhamento') return;
+    const plan = balbyDraft('protocolo');
+    const date = plan.avaliacao?.split('-').reverse().join('/');
+    const blocks = [
+      ['Alimentação',plan.alimentacao],['Meta diária de água',plan.agua],['Orientações de treino',plan.orientacoes],
+      ['Suplementos',plan.suplementos],['Próxima avaliação',date],['Alterações',plan.alteracoes]
+    ];
+    const protocol = balbyEl('protocolo');
+    protocol.replaceChildren();
+    for (const [label,value] of blocks) balbyParagraph(protocol,label + ' · ' + (value || 'Aguardando publicação.')).className = 'balby-record';
+    const record = today();
+    balbyEl('treino-orientacao').textContent = record.instruction || 'Treino técnico e condicionamento da demonstração.';
+    balbyEl('treino-status').textContent = record.checkin?.presenca || (record.completed ? 'Treino concluído.' : 'Treino a registrar.');
+    balbyEl('turma').textContent = plan.turma || 'Turma e modalidade aguardando confirmação.';
+    balbyEl('presenca').textContent = record.checkin?.presenca || 'Sem registro de presença hoje.';
+    const presencial = balbyEl('presencial');
+    presencial.replaceChildren();
+    balbyParagraph(presencial,plan.presencial || 'Sem sessão presencial publicada.');
+    if (plan.presencialRegistro) balbyParagraph(presencial,plan.presencialRegistro);
+    const online = balbyEl('online');
+    online.replaceChildren();
+    balbyParagraph(online,formatBalbyAppointment(plan.online,plan.fuso) || 'Sem aula on-line publicada.');
+    if (safeBalbyLink(plan.sala)) balbyLink(online,plan.sala,'Entrar na sala');
+    if (plan.onlineRegistro) balbyParagraph(online,plan.onlineRegistro);
+    renderBalbyRecords('mensagens',user,balbyEl('mensagens'),balbyMessageEntry);
+  }
+  
 
   go('capa');
 })();
